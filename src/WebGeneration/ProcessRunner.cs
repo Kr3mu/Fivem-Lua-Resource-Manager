@@ -1,3 +1,4 @@
+using Spectre.Console;
 using System.Diagnostics;
 using System.Text;
 
@@ -32,6 +33,7 @@ internal static class ProcessRunner
         {
             if (e.Data is not null)
             {
+                AnsiConsole.WriteLine(e.Data);
                 output.AppendLine(e.Data);
             }
         };
@@ -40,6 +42,7 @@ internal static class ProcessRunner
         {
             if (e.Data is not null)
             {
+                AnsiConsole.WriteLine(e.Data);
                 error.AppendLine(e.Data);
             }
         };
