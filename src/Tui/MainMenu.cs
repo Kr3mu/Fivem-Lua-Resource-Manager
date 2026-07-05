@@ -8,7 +8,8 @@ public static class MainMenu
     {
         using var _ = new CursorScope();
 
-        var options = new[] { "New Resource", "Create Web", "Convert PX", "Exit" };        var selected = 0;
+        var options = new[] { "New Resource", "Create Web", "Convert PX", "Exit" };
+        var selected = 0;
         var lastWidth = -1;
         var lastHeight = -1;
 

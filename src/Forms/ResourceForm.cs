@@ -22,71 +22,87 @@ public static class ResourceForm
 
         var selected = 0;
         string? error = null;
+        var lastWidth = -1;
+        var lastHeight = -1;
+        var needsRender = true;
 
         while (true)
         {
-            ResourceFormRenderer.Render(rows, selected, error);
-            error = null;
+            var width = ScreenRenderer.GetConsoleWidth();
+            var height = ScreenRenderer.GetConsoleHeight();
 
-            while (!Console.KeyAvailable)
+            if (width != lastWidth || height != lastHeight || needsRender)
             {
-                Thread.Sleep(50);
+                lastWidth = width;
+                lastHeight = height;
+                needsRender = false;
+                ResourceFormRenderer.Render(rows, selected, error);
             }
 
-            var key = Console.ReadKey(true).Key;
-
-            switch (key)
+            if (Console.KeyAvailable)
             {
-                case ConsoleKey.UpArrow:
-                case ConsoleKey.W:
-                case ConsoleKey.K:
-                    selected = (selected - 1 + rows.Count) % rows.Count;
-                    break;
+                error = null;
+                var key = Console.ReadKey(true).Key;
 
-                case ConsoleKey.DownArrow:
-                case ConsoleKey.S:
-                case ConsoleKey.J:
-                    selected = (selected + 1) % rows.Count;
-                    break;
+                switch (key)
+                {
+                    case ConsoleKey.UpArrow:
+                    case ConsoleKey.W:
+                    case ConsoleKey.K:
+                        selected = (selected - 1 + rows.Count) % rows.Count;
+                        break;
 
-                case ConsoleKey.Escape:
-                    return null;
+                    case ConsoleKey.DownArrow:
+                    case ConsoleKey.S:
+                    case ConsoleKey.J:
+                        selected = (selected + 1) % rows.Count;
+                        break;
 
-                case ConsoleKey.Enter:
-                    var row = rows[selected];
+                    case ConsoleKey.Escape:
+                        return null;
 
-                    switch (row)
-                    {
-                        case TextField field:
-                            var newValue = ResourceFormInput.PromptForField(field.Label, field.Value, field.Label == "Resource Name");
-                            field.Value = field.Label == "Resource Name" ? newValue.ToLowerInvariant() : newValue;
-                            break;
+                    case ConsoleKey.Enter:
+                        var row = rows[selected];
 
-                        case Toggle toggle:
-                            toggle.Value = !toggle.Value;
-                            break;
-
-                        case Button { Label: "Create" }:
-                            var result = ResourceFormValidator.TryBuildResult(rows);
-
-                            if (result is null)
-                            {
-                                error = "Resource name cannot be empty and may only contain letters, numbers, underscores, and hyphens.";
+                        switch (row)
+                        {
+                            case TextField field:
+                                var newValue = ResourceFormInput.PromptForField(field.Label, field.Value, field.Label == "Resource Name");
+                                field.Value = field.Label == "Resource Name" ? newValue.ToLowerInvariant() : newValue;
                                 break;
-                            }
 
-                            if (ResourceFormInput.ConfirmSummary(result))
-                            {
-                                return result;
-                            }
+                            case Toggle toggle:
+                                toggle.Value = !toggle.Value;
+                                break;
 
-                            break;
+                            case Button { Label: "Create" }:
+                                var result = ResourceFormValidator.TryBuildResult(rows);
 
-                        case Button { Label: "Cancel" }:
-                            return null;
-                    }
+                                if (result is null)
+                                {
+                                    error = "Resource name cannot be empty and may only contain letters, numbers, underscores, and hyphens.";
+                                    break;
+                                }
 
-                    break;
+                                if (ResourceFormInput.ConfirmSummary(result))
+                                {
+                                    return result;
+                                }
+
+                                break;
+
+                            case Button { Label: "Cancel" }:
+                                return null;
+                        }
+
+                        break;
+                }
+
+                needsRender = true;
+            }
+            else
+            {
+                Thread.Sleep(50);
             }
         }
     }

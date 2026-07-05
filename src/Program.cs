@@ -8,29 +8,43 @@ class Program
 {
     static int Main(string[] args)
     {
-        AnsiConsole.Clear();
-
-        while (true)
+        Console.Write("\u001b[?1049h");
+        Console.CancelKeyPress += (_, _) =>
         {
-            var commandName = MainMenu.Show();
+            Console.Write("\u001b[?1049l");
+            AnsiConsole.Cursor.Show();
+        };
 
-            switch (commandName)
+        try
+        {
+            AnsiConsole.Clear();
+
+            while (true)
             {
-                case "New Resource":
-                    NewCommand.Execute(args);
-                    break;
+                var commandName = MainMenu.Show();
 
-                case "Create Web":
-                    CreateWebCommand.Execute(args);
-                    break;
+                switch (commandName)
+                {
+                    case "New Resource":
+                        NewCommand.Execute(args);
+                        break;
 
-                case "Convert PX":
-                    ConvertPxCommand.Execute(args);
-                    break;
+                    case "Create Web":
+                        CreateWebCommand.Execute(args);
+                        break;
 
-                case "Exit":
-                    return 0;
+                    case "Convert PX":
+                        ConvertPxCommand.Execute(args);
+                        break;
+
+                    case "Exit":
+                        return 0;
+                }
             }
+        }
+        finally
+        {
+            Console.Write("\u001b[?1049l");
         }
     }
 }

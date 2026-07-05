@@ -4,15 +4,35 @@ namespace LuaResourceManager.Screen;
 
 public static class ScreenRenderer
 {
+    private static int _lastWidth = -1;
+    private static int _lastHeight = -1;
+
+    public static bool ForceClearNextFrame { get; set; }
+
     public static void BeginFrame()
     {
-        Console.Write("\u001b[H");
+        var width = GetConsoleWidth();
+        var height = GetConsoleHeight();
+        var resized = width != _lastWidth || height != _lastHeight;
+
+        _lastWidth = width;
+        _lastHeight = height;
+
+        var clear = resized || ForceClearNextFrame;
+        ForceClearNextFrame = false;
+
+        Console.Write(clear ? "\u001b[2J\u001b[H" : "\u001b[H");
         AnsiConsole.Cursor.Hide();
     }
 
     public static void EndFrame()
     {
         Console.Write("\u001b[J");
+    }
+
+    public static void RequestFullClear()
+    {
+        ForceClearNextFrame = true;
     }
 
     public static void RenderHeader(string subtitle)

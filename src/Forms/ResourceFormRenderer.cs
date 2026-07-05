@@ -30,7 +30,7 @@ internal static class ResourceFormRenderer
             }
             else
             {
-                var label = isSelected ? $"[orange1]{row.Label}[/]" : row.Label;
+                var label = isSelected ? $"[orange1][u]{row.Label}[/][/]" : row.Label;
                 var value = isSelected ? $"[orange1]{row.DisplayValue}[/]" : row.DisplayValue;
                 table.AddRow(label, value);
             }

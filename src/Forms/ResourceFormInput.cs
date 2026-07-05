@@ -37,7 +37,11 @@ internal static class ResourceFormInput
             prompt.DefaultValue(currentValue);
         }
 
-        return AnsiConsole.Prompt(prompt);
+        Console.WriteLine();
+        var result = AnsiConsole.Prompt(prompt);
+        Console.Write("\u001b[2J\u001b[H");
+        Console.Out.Flush();
+        return result;
     }
 
     public static bool ConfirmSummary(ResourceFormResult result)
