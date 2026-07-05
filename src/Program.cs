@@ -1,5 +1,5 @@
 using LuaResourceManager.Commands;
-using LuaResourceManager.Helpers;
+using LuaResourceManager.Tui;
 using Spectre.Console;
 
 namespace LuaResourceManager;
@@ -12,7 +12,7 @@ class Program
 
         while (true)
         {
-            var commandName = Tui.ShowMainMenu();
+            var commandName = MainMenu.Show();
 
             switch (commandName)
             {

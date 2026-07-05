@@ -1,40 +1,11 @@
 using System.Text;
+using LuaResourceManager.Forms;
 
-namespace LuaResourceManager.Helpers;
+namespace LuaResourceManager.ResourceGeneration;
 
-public static class ResourceCreator
+internal static class ManifestGenerator
 {
-    public static void Create(ResourceFormResult resource)
-    {
-        var path = Path.Combine(Directory.GetCurrentDirectory(), resource.Name);
-
-        if (Directory.Exists(path))
-        {
-            throw new IOException($"A folder named '{resource.Name}' already exists.");
-        }
-
-        Directory.CreateDirectory(path);
-        Directory.CreateDirectory(Path.Combine(path, "client"));
-        Directory.CreateDirectory(Path.Combine(path, "server"));
-
-        if (resource.CreateConfigs)
-        {
-            Directory.CreateDirectory(Path.Combine(path, "configs"));
-        }
-
-        File.WriteAllText(Path.Combine(path, "fxmanifest.lua"), GenerateManifest(resource));
-        File.WriteAllText(Path.Combine(path, "client", "init.lua"), "");
-        File.WriteAllText(Path.Combine(path, "server", "init.lua"), "");
-
-        if (resource.CreateConfigs)
-        {
-            File.WriteAllText(Path.Combine(path, "configs", "shared.lua"), GenerateConfig("Shared"));
-            File.WriteAllText(Path.Combine(path, "configs", "client.lua"), GenerateConfig("Client"));
-            File.WriteAllText(Path.Combine(path, "configs", "server.lua"), GenerateConfig("Server"));
-        }
-    }
-
-    private static string GenerateManifest(ResourceFormResult resource)
+    public static string Generate(ResourceFormResult resource)
     {
         var builder = new StringBuilder();
 
@@ -81,11 +52,6 @@ public static class ResourceCreator
         builder.AppendLine("}");
 
         return builder.ToString();
-    }
-
-    private static string GenerateConfig(string className)
-    {
-        return $"---@class {className}Config\n---@type {className}Config\nreturn {{}}\n";
     }
 
     private static string Escape(string value, char quote)

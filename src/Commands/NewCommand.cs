@@ -1,4 +1,6 @@
+using LuaResourceManager.Forms;
 using LuaResourceManager.Helpers;
+using LuaResourceManager.ResourceGeneration;
 using Spectre.Console;
 
 namespace LuaResourceManager.Commands;
