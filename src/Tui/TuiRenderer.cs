@@ -47,6 +47,7 @@ internal static class TuiRenderer
     {
         "New Resource" => "Create a new FiveM Lua resource",
         "Create Web" => "Scaffold Svelte + Tailwind web app",
+        "Convert PX" => "Convert px values to vh or rem",
         "Exit" => "Quit the application",
         _ => ""
     };
