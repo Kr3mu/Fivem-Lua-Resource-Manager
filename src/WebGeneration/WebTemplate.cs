@@ -60,14 +60,10 @@ export default defineConfig({
     background-color: transparent !important;
     overflow: hidden !important;
     height: 100vh !important;
-    width: 100% !important;
+    width: 100vw !important;
     margin: 0 !important;
     padding: 0 !important;
     font-size: 1.2vh;
-}
-
-* {
-    box-sizing: border-box;
 }
 
 *::-webkit-scrollbar {
@@ -75,9 +71,9 @@ export default defineConfig({
 }
 
 * {
-    scrollbar-width: none;
     outline: none !important;
     user-select: none;
+    box-sizing: border-box;
 }
 
 body {
