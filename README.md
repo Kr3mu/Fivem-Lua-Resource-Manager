@@ -25,14 +25,18 @@ dotnet run
 
 ## Build
 
-Build a standalone executable:
+Build a single-file standalone executable for Windows:
 
 ```bash
-dotnet build
-dotnet publish -c Release -r win-x64 --self-contained true
+dotnet publish -c Release -r win-x64 --self-contained true \
+  /p:PublishSingleFile=true /p:EnableCompressionInSingleFile=true
 ```
 
-The published binary will be located under `bin/Release/net10.0/win-x64/publish/`.
+The executable will be located at:
+
+```
+bin/Release/net10.0/win-x64/publish/LuaResourceManager.exe
+```
 
 ## Usage
 
