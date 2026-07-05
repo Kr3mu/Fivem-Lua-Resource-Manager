@@ -1,5 +1,5 @@
-using Spectre.Console;
 using LuaResourceManager.Helpers;
+using Spectre.Console;
 
 namespace LuaResourceManager.Commands;
 
@@ -9,22 +9,22 @@ public static class NewCommand
     {
         AnsiConsole.Clear();
 
-        AnsiConsole.Write(
-            new FigletText("LRM")
-                .Color(Color.Orange1)
-                .Centered()
-        );
+        var result = ResourceForm.Show();
 
-        AnsiConsole.Write(
-            new Rule("[orange1]New Resource[/]")
-                .Centered()
-        );
+        if (result is null)
+        {
+            return 0;
+        }
 
-        AnsiConsole.WriteLine();
-
-        var name = AnsiConsole.Ask<string>("[orange1]Resource name:[/]");
-
-        ConsoleHelper.Success($"Resource '{name}' would be created here.");
+        try
+        {
+            ResourceCreator.Create(result);
+            ConsoleHelper.Success($"Created resource '{result.Name}'");
+        }
+        catch (Exception ex)
+        {
+            ConsoleHelper.Error(ex.Message);
+        }
 
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine("[grey]Press any key to return...[/]");
