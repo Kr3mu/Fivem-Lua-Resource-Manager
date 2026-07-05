@@ -24,6 +24,10 @@ class Program
                     CreateWebCommand.Execute(args);
                     break;
 
+                case "Convert PX":
+                    ConvertPxCommand.Execute(args);
+                    break;
+
                 case "Exit":
                     return 0;
             }
