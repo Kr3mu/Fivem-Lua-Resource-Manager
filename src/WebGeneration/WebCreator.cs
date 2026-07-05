@@ -18,7 +18,7 @@ public static class WebCreator
         }
 
         AnsiConsole.Status()
-            .Start("Creating Vite Svelte app...", ctx =>
+            .Start("Creating Vite Svelte app (this may take a minute on first run)...", ctx =>
             {
                 ctx.Spinner(Spinner.Known.Dots);
                 ProcessRunner.RunViteCreate(result.PackageManager, resourcePath);

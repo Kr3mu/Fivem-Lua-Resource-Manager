@@ -46,7 +46,14 @@ internal static class ProcessRunner
 
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
-        process.WaitForExit();
+
+        var timeout = TimeSpan.FromMinutes(5);
+        if (!process.WaitForExit((int)timeout.TotalMilliseconds))
+        {
+            process.Kill(entireProcessTree: true);
+            throw new InvalidOperationException(
+                $"Command timed out after {timeout.TotalMinutes} minutes: {executable} {arguments}\n{error}{output}");
+        }
 
         if (process.ExitCode != 0)
         {
@@ -61,7 +68,7 @@ internal static class ProcessRunner
     {
         var args = packageManager switch
         {
-            "npm" => "create vite@latest web -- --template svelte-ts",
+            "npm" => "create --yes vite@latest web -- --template svelte-ts",
             "pnpm" => "create vite web --template svelte-ts",
             "bun" => "create vite web --template svelte-ts",
             _ => throw new InvalidOperationException($"Unknown package manager: {packageManager}")
