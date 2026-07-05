@@ -1,3 +1,4 @@
+using LuaResourceManager.Commands;
 using LuaResourceManager.Forms;
 using LuaResourceManager.Helpers;
 using LuaResourceManager.ResourceGeneration;
@@ -22,6 +23,14 @@ public static class NewCommand
         {
             ResourceCreator.Create(result);
             ConsoleHelper.Success($"Created resource '{result.Name}'");
+
+            var resourcePath = Path.Combine(Directory.GetCurrentDirectory(), result.Name);
+            var createWeb = AnsiConsole.Confirm("Create web project now?", false);
+
+            if (createWeb)
+            {
+                CreateWebCommand.Execute(args, resourcePath, false);
+            }
         }
         catch (Exception ex)
         {

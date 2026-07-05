@@ -16,6 +16,7 @@ internal static class ProcessRunner
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
+            RedirectStandardInput = true,
             CreateNoWindow = true,
         };
 
@@ -26,6 +27,7 @@ internal static class ProcessRunner
             throw new InvalidOperationException($"Failed to start process: {executable} {arguments}");
         }
 
+        process.StandardInput.Close();
         var output = new StringBuilder();
         var error = new StringBuilder();
 
@@ -69,15 +71,15 @@ internal static class ProcessRunner
 
     public static int RunViteCreate(string packageManager, string workingDirectory)
     {
-        var args = packageManager switch
+        var (executable, args) = packageManager switch
         {
-            "npm" => "create --yes vite@latest web -- --template svelte-ts",
-            "pnpm" => "create vite web --template svelte-ts",
-            "bun" => "create vite web --template svelte-ts",
+            "npm" => ("npx", "--yes create-vite@latest web --template svelte-ts --no-install"),
+            "pnpm" => ("pnpm", "dlx create-vite@latest web --template svelte-ts --no-install"),
+            "bun" => ("bun", "x create-vite@latest web --template svelte-ts --no-install"),
             _ => throw new InvalidOperationException($"Unknown package manager: {packageManager}")
         };
 
-        return Run(workingDirectory, packageManager, args);
+        return Run(workingDirectory, executable, args);
     }
 
     public static int RunTailwindInstall(string packageManager, string workingDirectory)

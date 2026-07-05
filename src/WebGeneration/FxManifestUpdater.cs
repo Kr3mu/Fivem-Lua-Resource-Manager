@@ -15,7 +15,7 @@ internal static class FxManifestUpdater
         File.WriteAllText(manifestPath, manifest);
     }
 
-    private static char DetectQuoteStyle(string manifest)
+    internal static char DetectQuoteStyle(string manifest)
     {
         foreach (var c in manifest)
         {
@@ -31,18 +31,20 @@ internal static class FxManifestUpdater
     private static string EnsureWebFiles(string manifest, char quote)
     {
         var webFiles = new[] { "web/dist/index.html", "web/dist/**" };
-        var entries = string.Join(",\n    ", webFiles.Select(file => $"{quote}{file}{quote}"));
 
         var filesStart = manifest.IndexOf("files {");
 
         if (filesStart == -1)
         {
-            var builder = new StringBuilder(manifest);
+            var builder = new StringBuilder();
             builder.AppendLine();
             builder.AppendLine("files {");
-            builder.AppendLine("    " + entries);
+            foreach (var file in webFiles)
+            {
+                builder.AppendLine($"    {quote}{file}{quote}");
+            }
             builder.AppendLine("}");
-            return builder.ToString();
+            return AppendAtEnd(manifest, builder.ToString());
         }
 
         var filesEnd = manifest.IndexOf('}', filesStart);
@@ -52,10 +54,54 @@ internal static class FxManifestUpdater
             return manifest;
         }
 
-        var content = manifest[filesStart..filesEnd];
-        var separator = content.TrimEnd().EndsWith("{") ? "    " : ",\n    ";
+        var content = manifest.Substring(filesStart + "files {".Length, filesEnd - filesStart - "files {".Length);
+        var existingEntries = new List<string>();
 
-        return manifest.Insert(filesEnd, separator + entries);
+        foreach (var rawLine in content.Split('\n'))
+        {
+            var line = rawLine.Trim();
+
+            if (string.IsNullOrWhiteSpace(line) || line == ",")
+            {
+                continue;
+            }
+
+            line = line.TrimEnd(',');
+
+            if (line.Length >= 2 && ((line[0] == '"' && line[^1] == '"') || (line[0] == '\'' && line[^1] == '\'')))
+            {
+                line = line[1..^1];
+            }
+
+            if (!string.IsNullOrWhiteSpace(line) && !existingEntries.Contains(line))
+            {
+                existingEntries.Add(line);
+            }
+        }
+
+        foreach (var webFile in webFiles)
+        {
+            if (!existingEntries.Contains(webFile))
+            {
+                existingEntries.Add(webFile);
+            }
+        }
+
+        var filesBuilder = new StringBuilder();
+        filesBuilder.AppendLine("files {");
+
+        for (var i = 0; i < existingEntries.Count; i++)
+        {
+            var comma = i < existingEntries.Count - 1 ? "," : string.Empty;
+            filesBuilder.AppendLine($"    {quote}{existingEntries[i]}{quote}{comma}");
+        }
+
+        filesBuilder.AppendLine("}");
+
+        var before = manifest[..filesStart];
+        var after = manifest[(filesEnd + 1)..];
+
+        return before + filesBuilder + after;
     }
 
     private static string EnsureUiPage(string manifest, char quote)
@@ -63,20 +109,40 @@ internal static class FxManifestUpdater
         var devLine = $"ui_page {quote}http://localhost:3000{quote}";
         var distLine = $"-- ui_page {quote}web/dist/index.html{quote}";
 
-        var index = manifest.IndexOf("ui_page");
-
-        if (index == -1)
+        var lines = manifest.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+        lines.RemoveAll(line =>
         {
-            return devLine + "\n" + distLine + "\n" + manifest;
+            var trimmed = line.Trim();
+            return trimmed.StartsWith("ui_page ", StringComparison.Ordinal) ||
+                   trimmed.StartsWith("-- ui_page ", StringComparison.Ordinal);
+        });
+
+        var builder = new StringBuilder();
+        foreach (var line in lines)
+        {
+            builder.AppendLine(line);
         }
 
-        var endOfLine = manifest.IndexOf('\n', index);
-
-        if (endOfLine == -1)
+        while (builder.Length > 0 && (builder[^1] == '\n' || builder[^1] == '\r'))
         {
-            endOfLine = manifest.Length;
+            builder.Length--;
         }
 
-        return manifest[..index] + devLine + "\n" + distLine + manifest[endOfLine..];
+        builder.AppendLine();
+        builder.AppendLine();
+        builder.AppendLine(devLine);
+        builder.AppendLine(distLine);
+
+        return builder.ToString();
+    }
+
+    private static string AppendAtEnd(string manifest, string content)
+    {
+        if (!manifest.EndsWith(Environment.NewLine))
+        {
+            manifest += Environment.NewLine;
+        }
+
+        return manifest + content;
     }
 }

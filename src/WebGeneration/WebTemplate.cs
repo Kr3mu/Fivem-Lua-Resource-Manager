@@ -44,7 +44,7 @@ export default defineConfig({
 """";
 
     public const string AppCss = """"
-@import url('__FONT_URL__');
+@import url("__FONT_URL__");
 
 @tailwind base;
 @tailwind components;

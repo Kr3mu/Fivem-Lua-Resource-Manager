@@ -7,7 +7,7 @@ namespace LuaResourceManager.Commands;
 
 public static class CreateWebCommand
 {
-    public static int Execute(string[] args)
+    public static int Execute(string[] args, string? resourcePath = null, bool showReturnPrompt = true)
     {
         AnsiConsole.Clear();
 
@@ -20,7 +20,7 @@ public static class CreateWebCommand
 
         try
         {
-            WebCreator.Create(result);
+            WebCreator.Create(result, resourcePath);
             ConsoleHelper.Success("Created web app for this resource");
         }
         catch (Exception ex)
@@ -28,9 +28,12 @@ public static class CreateWebCommand
             ConsoleHelper.Error(ex.Message);
         }
 
-        AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine("[grey]Press any key to return...[/]");
-        Console.ReadKey(true);
+        if (showReturnPrompt)
+        {
+            AnsiConsole.WriteLine();
+            AnsiConsole.MarkupLine("[grey]Press any key to return...[/]");
+            Console.ReadKey(true);
+        }
 
         return 0;
     }
