@@ -1,0 +1,55 @@
+# .NET build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Visual Studio
+.vs/
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+*.sln.iml
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+logs/
+
+# Publish profiles
+*.pubxml
+*.publishproj
+
+# Test results
+TestResults/
+
+# Coverage
+coverage.*
+*.coverage
+*.coveragexml
+
+# Local tool settings
+tools/*.log
+.dotnet/
