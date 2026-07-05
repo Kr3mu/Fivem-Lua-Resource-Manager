@@ -46,6 +46,7 @@ internal static class TuiRenderer
     private static string GetDescription(string option) => option switch
     {
         "New Resource" => "Create a new FiveM Lua resource",
+        "Create Web" => "Scaffold Svelte + Tailwind web app",
         "Exit" => "Quit the application",
         _ => ""
     };

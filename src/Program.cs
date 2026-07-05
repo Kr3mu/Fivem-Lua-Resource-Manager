@@ -20,6 +20,10 @@ class Program
                     NewCommand.Execute(args);
                     break;
 
+                case "Create Web":
+                    CreateWebCommand.Execute(args);
+                    break;
+
                 case "Exit":
                     return 0;
             }
